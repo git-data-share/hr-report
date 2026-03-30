@@ -1,0 +1,117 @@
+table _Measures
+	lineageTag: 64ba440a-4d5e-4351-8f40-a67583c8dccf
+
+	measure 'All Employees' = DISTINCTCOUNT(people_fact[employee_id])
+		formatString: #,0
+		lineageTag: d1a71c7b-0d78-4b5a-97b8-27f8b63c55ac
+
+	measure Headcount(all) = CALCULATE([All Employees],FILTER(people_fact,people_fact[hire_date]<=LASTDATE('Date'[Date])))
+		formatString: 0
+		lineageTag: 0101cacf-d857-4b84-ae9d-6e4d97dd4bc0
+
+	measure 'Headcount(emp w term date & w/o blank)' = CALCULATE([All Employees],FILTER(people_fact,people_fact[hire_date]<=LASTDATE('Date'[Date]) && people_fact[term_date]> LASTDATE('Date'[Date])))
+		formatString: 0
+		lineageTag: 18507b1f-c981-466b-ae16-5434f11450c1
+
+	measure 'Headcount(emp w term date or w blank)' = CALCULATE([All Employees],FILTER(people_fact,people_fact[hire_date]<=LASTDATE('Date'[Date]) && (people_fact[term_date]> LASTDATE('Date'[Date]) || people_fact[term_date] = BLANK())))
+		formatString: #,0
+		lineageTag: 2092f276-d9ba-42bf-adf0-df2764b2c263
+
+	measure Headcount = CALCULATE([All Employees],FILTER(people_fact,people_fact[hire_date]<=LASTDATE('Date'[Date]) && (people_fact[term_date]> LASTDATE('Date'[Date]) || people_fact[term_date] = BLANK())))
+		formatString: #,0
+		lineageTag: 2a501044-bf50-479c-ba7c-dc91b755aee7
+
+	measure 'Starting Headcount' = CALCULATE([All Employees],FILTER(people_fact,people_fact[hire_date]<FIRSTDATE('Date'[Date]) && (people_fact[term_date]=BLANK() || people_fact[term_date]>=FIRSTDATE('Date'[Date]))))
+		formatString: #,0
+		lineageTag: 0c6a91b1-697c-4925-8b37-58dd84c7d5d0
+
+	measure 'Ending Headcount' = CALCULATE([All Employees],FILTER(people_fact, people_fact[hire_date]<FIRSTDATE('Date'[Date]) && (people_fact[term_date]=BLANK() || people_fact[term_date]>=LASTDATE('Date'[Date]))))
+		formatString: #,0
+		lineageTag: 5cb50795-d3af-4c80-855b-ff7296f27471
+
+	measure Retention =
+			DIVIDE(
+			    [Ending Headcount],
+			    [Starting Headcount]
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: f573c4bb-2a23-4d8b-86f0-a0e75b29849d
+
+	measure 'Avg of Employees' = ([Starting Headcount] + [Headcount])/2
+		lineageTag: d32c92a8-8c53-4147-b905-c58f991af0b7
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Departing Employees' = CALCULATE([All Employees],FILTER(people_fact, people_fact[term_date]>=FIRSTDATE('Date'[Date]) && people_fact[term_date]<=LASTDATE('Date'[Date])))
+		formatString: 0
+		lineageTag: 2482f9f3-63dd-4425-ac25-0c9a2459a227
+
+	measure Turnover =
+			DIVIDE(
+			    [Departing Employees],
+			[Avg of Employees]
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 8ae0b0a2-29c6-4a7f-acd3-6d44bafa4521
+
+	measure 'Min-Max Retention' =
+			
+			SWITCH(TRUE(),
+			SELECTEDVALUE('Date'[Year])=CALCULATE(MIN('Date'[Year]),ALLSELECTED('Date')),[Retention],
+			SELECTEDVALUE('Date'[Year])=CALCULATE(MAX('Date'[Year]),ALLSELECTED('Date')),[Retention],
+			BLANK()
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 359aeea7-4aed-4bb6-8265-c539c32059f9
+
+	measure 'Retention Title' = "Employee Retention (" & MIN('Date'[Year]) & " - " & MAX('Date'[Year]) & ")"
+		lineageTag: 24e8fea8-1308-4fd2-b5f9-5576a804f016
+
+	measure 'Starting Headcount Text' = "Starting Headcount: " & FORMAT([Starting Headcount],"###,##0")
+		lineageTag: b33bc1a3-6521-4d1e-9bb0-da881726e713
+
+	measure 'Ending Headcount Text' = "Ending Headcount: " & FORMAT([Ending Headcount],"###,##0")
+		lineageTag: 3227d514-0e73-49a8-b41b-3d4dd67b960b
+
+	measure 'Parameter Title' = ```
+			"Select a Field  for which to compare Employee Retention from " & MIN('Date'[Year]) & " - " & MAX('Date'[Year]) 
+			```
+		lineageTag: de93d329-34f0-405d-93ff-1d5a7383f751
+
+	measure 'Slope text' = "How has employee retention is changed between "& MIN('Date'[Year]) & " & " & MAX('Date'[Year]) & " by " & MIN(Parameter[Parameter]) & "?"
+		lineageTag: c03a070d-8ef6-433e-9fe7-6e4e0ee4c197
+
+	measure 'Turnover text' = "Employee Turnover " & "(" & MIN('Date'[Year]) & " - " & MAX('Date'[Year]) & ")"
+		lineageTag: 9de582a3-2f61-415a-92e5-2dc5e9729c95
+
+	measure 'Departing text' = "Departing Employees:" & FORMAT([Departing Employees], "###,##0")
+		lineageTag: 408aebe7-c5c6-4c25-b9dc-255f7edb8532
+
+	measure 'Avg text' = "Avg of Employee:" & FORMAT([Avg of Employees] , "###,##0")
+		lineageTag: fb8ffa41-3f9e-4089-8004-731bccf81a61
+
+	column Column1
+		dataType: string
+		isHidden
+		lineageTag: 5fa8d937-81ef-434a-a04e-32c88869e969
+		summarizeBy: none
+		sourceColumn: Column1
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _Measures = m
+		mode: import
+		queryGroup: 'production tables'
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

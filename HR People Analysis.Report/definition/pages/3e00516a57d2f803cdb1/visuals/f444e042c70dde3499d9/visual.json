@@ -1,0 +1,57 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "f444e042c70dde3499d9",
+  "position": {
+    "x": 0,
+    "y": 0,
+    "z": 2000,
+    "height": 145,
+    "width": 280,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "education_dim"
+                    }
+                  },
+                  "Property": "education_key"
+                }
+              },
+              "queryRef": "education_dim.education_key",
+              "nativeQueryRef": "education_key"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "people_fact"
+                        }
+                      },
+                      "Property": "employee_id"
+                    }
+                  },
+                  "Function": 2
+                }
+              },
+              "queryRef": "people_fact.employee_id",
+              "nativeQueryRef": "Count of employee_id"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

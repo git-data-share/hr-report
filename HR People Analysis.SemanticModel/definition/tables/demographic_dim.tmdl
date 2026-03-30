@@ -1,0 +1,139 @@
+table demographic_dim
+	lineageTag: 80e15e1b-0d87-4789-8ee5-a29e22b5fb4a
+
+	column gender
+		dataType: string
+		lineageTag: cc188781-9506-46ba-b219-f0abd6cafead
+		summarizeBy: none
+		sourceColumn: gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column race
+		dataType: string
+		lineageTag: 74d645de-170b-4523-81e3-57c6c738e4c8
+		summarizeBy: none
+		sourceColumn: race
+
+		annotation SummarizationSetBy = Automatic
+
+	column age
+		dataType: int64
+		formatString: 0
+		lineageTag: fe156956-8d74-49c1-b4d4-2876271ddb17
+		summarizeBy: none
+		sourceColumn: age
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation __PBI_SemanticLinks = [{"LinkTarget":{"TableName":"demographic_dim","TableItemName":"Age group","ObjectType":4},"LinkType":"UsedInGroup"}]
+
+	column demog_key
+		dataType: int64
+		formatString: 0
+		lineageTag: efe0572a-8c90-4f41-9df7-b45cc1b3c71a
+		summarizeBy: none
+		sourceColumn: demog_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Age group' =
+			SWITCH(
+				TRUE,
+				ISBLANK('demographic_dim'[age]),
+				"(Blank)",
+				'demographic_dim'[age] IN {24,
+					25,
+					26,
+					27,
+					28,
+					29},
+				"24-29",
+				'demographic_dim'[age] IN {30,
+					31,
+					32,
+					33,
+					34,
+					35,
+					36,
+					37,
+					38,
+					39},
+				"30-39",
+				'demographic_dim'[age] IN {40,
+					41,
+					42,
+					43,
+					44,
+					45,
+					46,
+					47,
+					48,
+					49},
+				"40-49",
+				'demographic_dim'[age] IN {50,
+					51,
+					52,
+					53,
+					54,
+					55,
+					56,
+					57,
+					58,
+					59},
+				"50-59",
+				'demographic_dim'[age] IN {60,
+					61,
+					62,
+					63,
+					64,
+					65,
+					66,
+					67,
+					68,
+					69},
+				"60-69",
+				"Other"
+			)
+		formatString: 0
+		lineageTag: 27f705ea-c45f-4bfb-ad07-db40c8055037
+		summarizeBy: none
+
+		extendedProperty GroupingMetadata =
+				{
+				  "version": 0,
+				  "groupedColumns": [
+				    {
+				      "Column": {
+				        "Expression": {
+				          "SourceRef": {
+				            "Entity": "demographic_dim"
+				          }
+				        },
+				        "Property": "age"
+				      }
+				    }
+				  ]
+				}
+
+		annotation GroupingDesignState = {"Version":0,"Sources":[{"Name":"d","Entity":"demographic_dim"}],"GroupedColumns":[{"Column":{"Expression":{"SourceRef":{"Source":"d"}},"Property":"age"}}],"GroupItems":[{"DisplayName":"(Blank)","BlankDefaultPlaceholder":true},{"DisplayName":"24-29","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"d"}},"Property":"age"}}],"Values":[[{"Literal":{"Value":"24L"}}],[{"Literal":{"Value":"25L"}}],[{"Literal":{"Value":"26L"}}],[{"Literal":{"Value":"27L"}}],[{"Literal":{"Value":"28L"}}],[{"Literal":{"Value":"29L"}}]]}}},{"DisplayName":"30-39","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"d"}},"Property":"age"}}],"Values":[[{"Literal":{"Value":"30L"}}],[{"Literal":{"Value":"31L"}}],[{"Literal":{"Value":"32L"}}],[{"Literal":{"Value":"33L"}}],[{"Literal":{"Value":"34L"}}],[{"Literal":{"Value":"35L"}}],[{"Literal":{"Value":"36L"}}],[{"Literal":{"Value":"37L"}}],[{"Literal":{"Value":"38L"}}],[{"Literal":{"Value":"39L"}}]]}}},{"DisplayName":"40-49","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"d"}},"Property":"age"}}],"Values":[[{"Literal":{"Value":"40L"}}],[{"Literal":{"Value":"41L"}}],[{"Literal":{"Value":"42L"}}],[{"Literal":{"Value":"43L"}}],[{"Literal":{"Value":"44L"}}],[{"Literal":{"Value":"45L"}}],[{"Literal":{"Value":"46L"}}],[{"Literal":{"Value":"47L"}}],[{"Literal":{"Value":"48L"}}],[{"Literal":{"Value":"49L"}}]]}}},{"DisplayName":"50-59","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"d"}},"Property":"age"}}],"Values":[[{"Literal":{"Value":"50L"}}],[{"Literal":{"Value":"51L"}}],[{"Literal":{"Value":"52L"}}],[{"Literal":{"Value":"53L"}}],[{"Literal":{"Value":"54L"}}],[{"Literal":{"Value":"55L"}}],[{"Literal":{"Value":"56L"}}],[{"Literal":{"Value":"57L"}}],[{"Literal":{"Value":"58L"}}],[{"Literal":{"Value":"59L"}}]]}}},{"DisplayName":"60-69","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"d"}},"Property":"age"}}],"Values":[[{"Literal":{"Value":"60L"}}],[{"Literal":{"Value":"61L"}}],[{"Literal":{"Value":"62L"}}],[{"Literal":{"Value":"63L"}}],[{"Literal":{"Value":"64L"}}],[{"Literal":{"Value":"65L"}}],[{"Literal":{"Value":"66L"}}],[{"Literal":{"Value":"67L"}}],[{"Literal":{"Value":"68L"}}],[{"Literal":{"Value":"69L"}}]]}}},{"DisplayName":"Other"}]}
+
+		annotation SummarizationSetBy = Automatic
+
+	partition demographic_dim = m
+		mode: import
+		queryGroup: 'production tables'
+		source =
+				let
+				    Source = people_data_source,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"gender", "race", "age"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns"),
+				    #"Added Index" = Table.AddIndexColumn(#"Removed Duplicates", "Index", 1, 1, Int64.Type),
+				    #"Renamed Columns" = Table.RenameColumns(#"Added Index",{{"Index", "demog_key"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

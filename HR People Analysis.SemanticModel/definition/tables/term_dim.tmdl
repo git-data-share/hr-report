@@ -1,0 +1,46 @@
+table term_dim
+	lineageTag: 9df75f07-f366-4f1a-ae92-ab678d81c295
+
+	column term_type
+		dataType: string
+		lineageTag: 005f031e-da77-48ea-8853-a288ba1d19a4
+		summarizeBy: none
+		sourceColumn: term_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column term_reason
+		dataType: string
+		lineageTag: 551234e6-bb09-46b8-b503-9dfca41922e9
+		summarizeBy: none
+		sourceColumn: term_reason
+
+		annotation SummarizationSetBy = Automatic
+
+	column term_key
+		dataType: int64
+		formatString: 0
+		lineageTag: 5344acff-d6ed-485e-9d90-5d44030509e8
+		summarizeBy: none
+		sourceColumn: term_key
+
+		annotation SummarizationSetBy = Automatic
+
+	partition term_dim = m
+		mode: import
+		queryGroup: 'production tables'
+		source =
+				let
+				    Source = people_employment_source,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"term_type", "term_reason"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns"),
+				    #"Removed Blank Rows" = Table.SelectRows(#"Removed Duplicates", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+				    #"Added Index" = Table.AddIndexColumn(#"Removed Blank Rows", "Index", 1, 1, Int64.Type),
+				    #"Renamed Columns" = Table.RenameColumns(#"Added Index",{{"Index", "term_key"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

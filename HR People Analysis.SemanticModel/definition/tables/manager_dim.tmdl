@@ -1,0 +1,105 @@
+table manager_dim
+	lineageTag: 9d2f29a3-e5f5-480c-bfa8-cbc53d938e24
+
+	column employee_id
+		dataType: string
+		lineageTag: 8d820f73-fd69-46b7-bd56-76827a4ea4cb
+		summarizeBy: none
+		sourceColumn: employee_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_level_manager
+		dataType: string
+		lineageTag: 9e59f115-499f-441a-b14b-19a4a032204d
+		summarizeBy: none
+		sourceColumn: first_level_manager
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_level_manager_name
+		dataType: string
+		lineageTag: 0f4a7192-1b20-48b5-8b41-92e224b3cce4
+		summarizeBy: none
+		sourceColumn: first_level_manager_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column second_level_manager
+		dataType: string
+		lineageTag: 04d41265-ec4c-4801-a2ef-0cebaa6592ab
+		summarizeBy: none
+		sourceColumn: second_level_manager
+
+		annotation SummarizationSetBy = Automatic
+
+	column second_level_manager_name
+		dataType: string
+		lineageTag: 66b5938a-c2b9-4c62-b017-a786a4778f44
+		summarizeBy: none
+		sourceColumn: second_level_manager_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column third_level_manager
+		dataType: string
+		lineageTag: 97119729-4236-4ee9-8e85-ddf39c025bfb
+		summarizeBy: none
+		sourceColumn: third_level_manager
+
+		annotation SummarizationSetBy = Automatic
+
+	column third_level_manager_name
+		dataType: string
+		lineageTag: ca4bc3c3-c7cc-49d6-9ed2-a305fd0cb47f
+		summarizeBy: none
+		sourceColumn: third_level_manager_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column fourth_level_manager
+		dataType: string
+		lineageTag: fad0d4d4-0c5d-4bf7-9982-8293eca803a2
+		summarizeBy: none
+		sourceColumn: fourth_level_manager
+
+		annotation SummarizationSetBy = Automatic
+
+	column fourth_level_manager_name
+		dataType: string
+		lineageTag: 0c01b5fc-3330-43d4-8b21-9807ded4140e
+		summarizeBy: none
+		sourceColumn: fourth_level_manager_name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition manager_dim = m
+		mode: import
+		queryGroup: 'production tables'
+		source =
+				let
+				    Source = people_employment_source,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"employee_id", "first_level_manager", "second_level_manager", "third_level_manager", "fourth_level_manager"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Removed Other Columns",{{"fourth_level_manager", type text}, {"third_level_manager", type text}, {"second_level_manager", type text}, {"first_level_manager", type text}, {"employee_id", type text}}),
+				    #"Merged Queries" = Table.NestedJoin(#"Changed Type", {"first_level_manager"}, people_fact, {"employee_id"}, "people_fact", JoinKind.LeftOuter),
+				    #"Expanded people_fact" = Table.ExpandTableColumn(#"Merged Queries", "people_fact", {"first_name", "last_name"}, {"first_name", "last_name"}),
+				    #"Merged Columns" = Table.CombineColumns(#"Expanded people_fact",{"first_name", "last_name"},Combiner.CombineTextByDelimiter(" ", QuoteStyle.None),"first_level_manager_name"),
+				    #"Reordered Columns" = Table.ReorderColumns(#"Merged Columns",{"employee_id", "first_level_manager", "first_level_manager_name", "second_level_manager", "third_level_manager", "fourth_level_manager"}),
+				    #"Merged Queries1" = Table.NestedJoin(#"Reordered Columns", {"second_level_manager"}, people_fact, {"employee_id"}, "people_fact", JoinKind.LeftOuter),
+				    #"Expanded people_fact1" = Table.ExpandTableColumn(#"Merged Queries1", "people_fact", {"first_name", "last_name"}, {"first_name", "last_name"}),
+				    #"Merged Columns1" = Table.CombineColumns(#"Expanded people_fact1",{"first_name", "last_name"},Combiner.CombineTextByDelimiter(" ", QuoteStyle.None),"second_level_manager_name"),
+				    #"Reordered Columns1" = Table.ReorderColumns(#"Merged Columns1",{"employee_id", "first_level_manager", "first_level_manager_name", "second_level_manager", "second_level_manager_name", "third_level_manager", "fourth_level_manager"}),
+				    #"Merged Queries2" = Table.NestedJoin(#"Reordered Columns1", {"third_level_manager"}, people_fact, {"employee_id"}, "people_fact", JoinKind.LeftOuter),
+				    #"Expanded people_fact2" = Table.ExpandTableColumn(#"Merged Queries2", "people_fact", {"first_name", "last_name"}, {"first_name", "last_name"}),
+				    #"Merged Columns2" = Table.CombineColumns(#"Expanded people_fact2",{"first_name", "last_name"},Combiner.CombineTextByDelimiter(" ", QuoteStyle.None),"third_level_manager_name"),
+				    #"Reordered Columns2" = Table.ReorderColumns(#"Merged Columns2",{"employee_id", "first_level_manager", "first_level_manager_name", "second_level_manager", "second_level_manager_name", "third_level_manager", "third_level_manager_name", "fourth_level_manager"}),
+				    #"Merged Queries3" = Table.NestedJoin(#"Reordered Columns2", {"fourth_level_manager"}, people_fact, {"employee_id"}, "people_fact", JoinKind.LeftOuter),
+				    #"Expanded people_fact3" = Table.ExpandTableColumn(#"Merged Queries3", "people_fact", {"first_name", "last_name"}, {"first_name", "last_name"}),
+				    #"Merged Columns3" = Table.CombineColumns(#"Expanded people_fact3",{"first_name", "last_name"},Combiner.CombineTextByDelimiter(" ", QuoteStyle.None),"fourth_level_manager_name")
+				in
+				    #"Merged Columns3"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

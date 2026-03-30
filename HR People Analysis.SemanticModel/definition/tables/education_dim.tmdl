@@ -1,0 +1,37 @@
+table education_dim
+	lineageTag: ba082ecf-3bca-4c7e-b96b-d8d5ffab714f
+
+	column education
+		dataType: string
+		lineageTag: 94f1b3ef-54dc-41df-b3fc-8efdb58a54e5
+		summarizeBy: none
+		sourceColumn: education
+
+		annotation SummarizationSetBy = Automatic
+
+	column education_key
+		dataType: int64
+		formatString: 0
+		lineageTag: 9fbe7c39-447d-4f60-8b8f-cc138d09257f
+		summarizeBy: none
+		sourceColumn: education_key
+
+		annotation SummarizationSetBy = Automatic
+
+	partition education_dim = m
+		mode: import
+		queryGroup: 'production tables'
+		source =
+				let
+				    Source = people_data_source,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"education"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns"),
+				    #"Added Index" = Table.AddIndexColumn(#"Removed Duplicates", "Index", 1, 1, Int64.Type),
+				    #"Renamed Columns" = Table.RenameColumns(#"Added Index",{{"Index", "education_key"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,38 @@
+expression people_data_source =
+		let
+		    Source = source,
+		    #"D:\Taarika\BA-BI-Documents (Taarika)\Projects - BI\HR People Analysis\data\_people_data csv" = Source{[#"Folder Path"="D:\Taarika\BA-BI-Documents (Taarika)\Projects - BI\HR People Analysis\data\",Name="people_data.csv"]}[Content],
+		    #"Imported CSV" = Csv.Document(#"D:\Taarika\BA-BI-Documents (Taarika)\Projects - BI\HR People Analysis\data\_people_data csv",[Delimiter=",", Columns=9, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(#"Imported CSV", [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"employee_id", Int64.Type}, {"gender", type text}, {"race", type text}, {"birth_date", type date}, {"education", type text}, {"location", type text}, {"location_city", type text}, {"marital_status", type text}, {"employment_status", type text}}),
+		    #"Calculated Age" = Table.TransformColumns(#"Changed Type",{{"birth_date", each Date.From(DateTime.LocalNow()) - _, type duration}}),
+		    #"Calculated Total Years" = Table.TransformColumns(#"Calculated Age",{{"birth_date", each Duration.TotalDays(_) / 365, type number}}),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Calculated Total Years",{{"birth_date", Int64.Type}}),
+		    #"Renamed Columns" = Table.RenameColumns(#"Changed Type1",{{"birth_date", "age"}}),
+		    #"Changed Type2" = Table.TransformColumnTypes(#"Renamed Columns",{{"employee_id", type text}})
+		in
+		    #"Changed Type2"
+	lineageTag: 56dcb99f-53c9-4b23-913d-d028c9fbab75
+	queryGroup: 'source tables'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression people_employment_source =
+		let
+		    Source = source,
+		    #"D:\Taarika\BA-BI-Documents (Taarika)\Projects - BI\HR People Analysis\data\_people_employment_history csv" = Source{[#"Folder Path"="D:\Taarika\BA-BI-Documents (Taarika)\Projects - BI\HR People Analysis\data\",Name="people_employment_history.csv"]}[Content],
+		    #"Imported CSV" = Csv.Document(#"D:\Taarika\BA-BI-Documents (Taarika)\Projects - BI\HR People Analysis\data\_people_employment_history csv",[Delimiter=",", Columns=16, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+		    #"Promoted Headers" = Table.PromoteHeaders(#"Imported CSV", [PromoteAllScalars=true]),
+		    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"employee_id", Int64.Type}, {"first_name", type text}, {"last_name", type text}, {"department", type text}, {"sub-department", type text}, {"first_level_manager", type text}, {"second_level_manager", type text}, {"third_level_manager", type text}, {"fourth_level_manager", Int64.Type}, {"job_level", type text}, {"salary", Int64.Type}, {"hire_date", type date}, {"term_date", type date}, {"term_type", type text}, {"term_reason", type text}, {"active_status", Int64.Type}}),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Changed Type",{{"employee_id", type text}, {"first_level_manager", type text}, {"second_level_manager", type text}, {"third_level_manager", type text}, {"fourth_level_manager", type text}})
+		in
+		    #"Changed Type1"
+	lineageTag: 227458d6-3321-4aaf-b32e-609ba6339857
+	queryGroup: 'source tables'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
