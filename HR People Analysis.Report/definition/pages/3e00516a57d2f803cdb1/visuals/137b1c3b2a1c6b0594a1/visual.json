@@ -1,0 +1,155 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "137b1c3b2a1c6b0594a1",
+  "position": {
+    "x": 798.88888888888891,
+    "y": 444.44444444444446,
+    "z": 8000,
+    "height": 275.55555555555554,
+    "width": 481.11111111111109,
+    "tabOrder": 8000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Date"
+                    }
+                  },
+                  "Property": "Year"
+                }
+              },
+              "queryRef": "Sum(Date.Year)",
+              "nativeQueryRef": "Year"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Starting Headcount"
+                }
+              },
+              "queryRef": "_Measures.Starting Headcount",
+              "nativeQueryRef": "Starting Headcount"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Headcount"
+                }
+              },
+              "queryRef": "_Measures.Headcount",
+              "nativeQueryRef": "Headcount"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Avg of Employees"
+                }
+              },
+              "queryRef": "_Measures.Avg of Employees",
+              "nativeQueryRef": "Avg of Employees"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Departing Employees"
+                }
+              },
+              "queryRef": "_Measures.Departing Employees",
+              "nativeQueryRef": "Departing Employees"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Turnover"
+                }
+              },
+              "queryRef": "_Measures.Turnover",
+              "nativeQueryRef": "Turnover"
+            }
+          ],
+          "showAll": true
+        }
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "78.22223105659782D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Measures.Avg of Employees"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "87.22222222222223D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Measures.Starting Headcount"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "84.77774675691757D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Measures.Departing Employees"
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

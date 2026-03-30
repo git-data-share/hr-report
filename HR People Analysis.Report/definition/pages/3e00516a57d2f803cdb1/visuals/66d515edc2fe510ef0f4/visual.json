@@ -1,0 +1,57 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "66d515edc2fe510ef0f4",
+  "position": {
+    "x": 325,
+    "y": 0,
+    "z": 1000,
+    "height": 105,
+    "width": 280,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "marital_dim"
+                    }
+                  },
+                  "Property": "marital_status"
+                }
+              },
+              "queryRef": "marital_dim.marital_status",
+              "nativeQueryRef": "marital_status"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "people_fact"
+                        }
+                      },
+                      "Property": "employee_id"
+                    }
+                  },
+                  "Function": 2
+                }
+              },
+              "queryRef": "people_fact.employee_id",
+              "nativeQueryRef": "Count of employee_id"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

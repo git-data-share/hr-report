@@ -1,0 +1,54 @@
+table Parameter
+	lineageTag: e5b356dd-6fa7-44c8-9e5b-d5cb24ced228
+
+	column Parameter
+		lineageTag: 716bb5a3-3064-44ed-a5d8-9c3776133634
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Parameter Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Parameter Fields'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parameter Fields'
+		isHidden
+		lineageTag: 36c3a228-093d-452e-96d4-de3a68924f0d
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Parameter Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parameter Order'
+		isHidden
+		formatString: 0
+		lineageTag: 01c95ee6-e618-482c-a6c7-1210cda5c9a9
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Parameter = calculated
+		mode: import
+		source =
+				{
+				    ("Department", NAMEOF('department_dim'[department]), 0),
+				    ("Location", NAMEOF('location_dim'[location]), 1),
+				    ("Job level", NAMEOF('job_level_dim'[job_level]), 2),
+				    ("Age group", NAMEOF('demographic_dim'[Age group]), 3),
+				    ("Gender", NAMEOF('demographic_dim'[gender]), 4),
+				    ("Race", NAMEOF('demographic_dim'[race]), 5),
+				    ("Marital status", NAMEOF('marital_dim'[marital_status]), 6),
+				    ("Education", NAMEOF('education_dim'[education]), 7)
+				}
+
+	annotation PBI_Id = 9d6af29a5cee4c0eb50aad09ba0338c4
+

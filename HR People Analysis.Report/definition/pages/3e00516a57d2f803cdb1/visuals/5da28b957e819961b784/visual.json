@@ -1,0 +1,79 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "5da28b957e819961b784",
+  "position": {
+    "x": 1000,
+    "y": 0,
+    "z": 0,
+    "height": 402.22222222222223,
+    "width": 280,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "location_dim"
+                    }
+                  },
+                  "Property": "location_city"
+                }
+              },
+              "queryRef": "location_dim.location_city",
+              "nativeQueryRef": "location_city"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "people_fact"
+                        }
+                      },
+                      "Property": "employee_id"
+                    }
+                  },
+                  "Function": 2
+                }
+              },
+              "queryRef": "people_fact.employee_id",
+              "nativeQueryRef": "Count of employee_id"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Aggregation": {
+                "Expression": {
+                  "Column": {
+                    "Expression": {
+                      "SourceRef": {
+                        "Entity": "people_fact"
+                      }
+                    },
+                    "Property": "employee_id"
+                  }
+                },
+                "Function": 2
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

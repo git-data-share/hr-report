@@ -1,0 +1,67 @@
+table source
+	lineageTag: 0a4f5fb3-2db7-4702-88a1-a5ea7bd1b64b
+
+	column Name
+		dataType: string
+		lineageTag: 823bb43e-a24a-46c8-a591-2f09ad93cd2f
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Extension
+		dataType: string
+		lineageTag: 42768bd0-10e5-4dd5-bf0a-5a29083e4cdb
+		summarizeBy: none
+		sourceColumn: Extension
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date accessed'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 45810c0b-7e12-4bba-b990-4283b9e3d5ea
+		summarizeBy: none
+		sourceColumn: Date accessed
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date modified'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d387ddb4-b2f9-4e47-8e72-0efbfc7dd772
+		summarizeBy: none
+		sourceColumn: Date modified
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date created'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b53b9795-cfb6-4916-8fbe-2d53a3cc9267
+		summarizeBy: none
+		sourceColumn: Date created
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Folder Path'
+		dataType: string
+		lineageTag: b6038fff-b37d-43fd-897b-432273d3a329
+		summarizeBy: none
+		sourceColumn: Folder Path
+
+		annotation SummarizationSetBy = Automatic
+
+	partition source = m
+		mode: import
+		queryGroup: 'source tables'
+		source =
+				let
+				    Source = Folder.Files("D:\Taarika\BA-BI-Documents (Taarika)\Projects - BI\HR People Analysis\data")
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

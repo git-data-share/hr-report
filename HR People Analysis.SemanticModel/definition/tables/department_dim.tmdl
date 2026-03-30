@@ -1,0 +1,45 @@
+table department_dim
+	lineageTag: 79779fe8-f153-407d-96a8-e57f3745aa97
+
+	column department
+		dataType: string
+		lineageTag: 31867c39-1288-4db4-b9d6-8949db0750f9
+		summarizeBy: none
+		sourceColumn: department
+
+		annotation SummarizationSetBy = Automatic
+
+	column sub-department
+		dataType: string
+		lineageTag: 1e576b43-3cb3-4ced-864d-9f34a92c40e2
+		summarizeBy: none
+		sourceColumn: sub-department
+
+		annotation SummarizationSetBy = Automatic
+
+	column department_key
+		dataType: int64
+		formatString: 0
+		lineageTag: 3cf9f714-8655-433c-a0ec-ae79465247dc
+		summarizeBy: none
+		sourceColumn: department_key
+
+		annotation SummarizationSetBy = Automatic
+
+	partition department_dim = m
+		mode: import
+		queryGroup: 'production tables'
+		source =
+				let
+				    Source = people_employment_source,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"department", "sub-department"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns"),
+				    #"Added Index" = Table.AddIndexColumn(#"Removed Duplicates", "Index", 1, 1, Int64.Type),
+				    #"Renamed Columns" = Table.RenameColumns(#"Added Index",{{"Index", "department_key"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

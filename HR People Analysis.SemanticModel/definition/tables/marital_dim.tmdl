@@ -1,0 +1,37 @@
+table marital_dim
+	lineageTag: 93911b6f-2a9c-4156-a3e2-91d0f868dff5
+
+	column marital_status
+		dataType: string
+		lineageTag: d023789d-bde3-4c5c-9ce9-8cecf95828e8
+		summarizeBy: none
+		sourceColumn: marital_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column marital_key
+		dataType: int64
+		formatString: 0
+		lineageTag: ebbbe074-4e53-4592-9933-ccb78a1d03ce
+		summarizeBy: none
+		sourceColumn: marital_key
+
+		annotation SummarizationSetBy = Automatic
+
+	partition marital_dim = m
+		mode: import
+		queryGroup: 'production tables'
+		source =
+				let
+				    Source = people_data_source,
+				    #"Removed Other Columns" = Table.SelectColumns(Source,{"marital_status"}),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Other Columns"),
+				    #"Added Index" = Table.AddIndexColumn(#"Removed Duplicates", "Index", 1, 1, Int64.Type),
+				    #"Renamed Columns" = Table.RenameColumns(#"Added Index",{{"Index", "marital_key"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

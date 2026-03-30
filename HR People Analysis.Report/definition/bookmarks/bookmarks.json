@@ -1,0 +1,32 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmarksMetadata/1.0.0/schema.json",
+  "items": [
+    {
+      "name": "aa40066efd1e9013d0e6"
+    },
+    {
+      "name": "4fa4cfa0809207bca4a5"
+    },
+    {
+      "name": "d34cb74a3a0cb753e51b"
+    },
+    {
+      "name": "92534827246d98414d28"
+    },
+    {
+      "name": "34999f7f964e62ba0927"
+    },
+    {
+      "name": "4d01ae0500572e170748"
+    },
+    {
+      "name": "61d24b06413b8b348ed3"
+    },
+    {
+      "name": "53115fd923e18fc05b9f"
+    },
+    {
+      "name": "7270a52934aa52f233d0"
+    }
+  ]
+}
